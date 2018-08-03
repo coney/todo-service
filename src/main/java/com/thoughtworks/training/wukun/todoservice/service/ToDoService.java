@@ -19,7 +19,7 @@ public class ToDoService {
 
     public List<ToDo> list() {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return todoRepository.findAllByUserId(user.getId())
+        return todoRepository.findAllByUserId(user.getId());
     }
 
     @Transactional
