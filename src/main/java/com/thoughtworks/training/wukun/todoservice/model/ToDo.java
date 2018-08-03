@@ -47,9 +47,11 @@ public class ToDo {
     @NotNull
     private Integer userId;
 
+    @Builder.Default
+    private Boolean deleted = false;
+
     @JsonProperty
     public String getChecked() {
         return checked.toString();
     }
-
 }
