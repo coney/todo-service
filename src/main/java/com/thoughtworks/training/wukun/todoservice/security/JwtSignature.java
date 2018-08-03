@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -39,6 +40,6 @@ public class JwtSignature implements Serializable {
     }
 
     private byte[] getSecretKey() {
-        return secret.getBytes();
+        return secret.getBytes(Charset.forName("UTF-8"));
     }
 }
