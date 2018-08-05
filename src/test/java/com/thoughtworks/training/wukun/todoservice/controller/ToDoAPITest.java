@@ -1,10 +1,9 @@
 package com.thoughtworks.training.wukun.todoservice.controller;
 
 import com.google.common.collect.ImmutableList;
+import com.thoughtworks.training.wukun.todoservice.dto.User;
 import com.thoughtworks.training.wukun.todoservice.model.ToDo;
 import com.thoughtworks.training.wukun.todoservice.repository.ToDoRepository;
-import com.thoughtworks.training.wukun.todoservice.security.Constants;
-import com.thoughtworks.training.wukun.todoservice.security.JwtSignature;
 import com.thoughtworks.training.wukun.todoservice.service.ToDoService;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -14,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -25,7 +22,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -52,8 +48,6 @@ public class ToDoAPITest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private JwtSignature jwtSignature;
 
     @MockBean
     private ToDoRepository toDoRepository;
@@ -63,7 +57,7 @@ public class ToDoAPITest {
     private ToDoService toDoService;
 
     private UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            new User(String.valueOf(userId), "", Collections.emptySet()), null, Collections.emptyList()
+            new User(userId, "fakeUser", ""), null, Collections.emptyList()
     );
 
     @Before
@@ -88,20 +82,20 @@ public class ToDoAPITest {
                 .andExpect(jsonPath("$[0].text").value("foo"));
     }
 
-    @Test
-    public void shouldReturnItemsListWithAuthorizationHeader() throws Exception {
-        String token = jwtSignature.generateToken(new HashMap<String, Object>() {{
-            put("userId", userId);
-        }});
-        mockMvc.perform(
-                get("/todos")
-                        .header(HttpHeaders.AUTHORIZATION, Constants.BEARER_TOKEN_PREFIX + token)
-        )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(todoId))
-                .andExpect(jsonPath("$[0].text").value("foo"));
-    }
+//    @Test
+//    public void shouldReturnItemsListWithAuthorizationHeader() throws Exception {
+//        String token = jwtSignature.generateToken(new HashMap<String, Object>() {{
+//            put("userId", userId);
+//        }});
+//        mockMvc.perform(
+//                get("/todos")
+//                        .header(HttpHeaders.AUTHORIZATION, Constants.BEARER_TOKEN_PREFIX + token)
+//        )
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.length()").value(1))
+//                .andExpect(jsonPath("$[0].id").value(todoId))
+//                .andExpect(jsonPath("$[0].text").value("foo"));
+//    }
 
     @Test
     public void shouldReturnItemsListWithManuallySetSecurityContext() throws Exception {

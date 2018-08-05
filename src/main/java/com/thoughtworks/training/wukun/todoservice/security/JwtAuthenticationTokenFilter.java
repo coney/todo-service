@@ -1,11 +1,12 @@
 package com.thoughtworks.training.wukun.todoservice.security;
 
-import com.google.common.collect.ImmutableList;
+import com.thoughtworks.training.wukun.todoservice.client.UserClient;
+import com.thoughtworks.training.wukun.todoservice.dto.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.thymeleaf.util.StringUtils;
@@ -15,13 +16,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtSignature jwtSignature;
+    private UserClient userClient;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -32,11 +35,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             getTokenFromRequest(request).ifPresent(token -> {
-                Integer userId = jwtSignature.getUserId(token);
-                User user = new User(userId.toString(), "", ImmutableList.of());
-                SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-                        user, null, user.getAuthorities()
-                ));
+                User user = userClient.verifyToken(token);
+                SecurityContextHolder.getContext().setAuthentication(
+                        new UsernamePasswordAuthenticationToken(
+                                user, null, Collections.emptyList()
+                        )
+                );
             });
         } catch (RuntimeException e) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, String.format("authentication failed: %s", e.getMessage()));
