@@ -1,12 +1,11 @@
 package com.thoughtworks.training.wukun.todoservice.security;
 
 import com.google.common.collect.ImmutableList;
-import com.thoughtworks.training.wukun.todoservice.model.User;
-import com.thoughtworks.training.wukun.todoservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.thymeleaf.util.StringUtils;
@@ -22,9 +21,6 @@ import java.util.Optional;
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private JwtSignature jwtSignature;
 
     @Override
@@ -36,10 +32,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             getTokenFromRequest(request).ifPresent(token -> {
-                Integer userId = jwtSignature.getUserName(token);
-                User user = userService.getUser(userId);
+                Integer userId = jwtSignature.getUserId(token);
+                User user = new User(userId.toString(), "", ImmutableList.of());
                 SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-                        user, null, ImmutableList.of()
+                        user, null, user.getAuthorities()
                 ));
             });
         } catch (RuntimeException e) {

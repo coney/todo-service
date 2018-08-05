@@ -29,7 +29,7 @@ public class JwtSignature implements Serializable {
     }
 
 
-    public Integer getUserName(String token) {
+    public Integer getUserId(String token) {
         Claims claims = getClaimsFromToken(token);
         return Optional.ofNullable(claims.get("userId", Integer.class))
                 .orElseThrow(() -> new UsernameNotFoundException("can't find user fron jwt token"));

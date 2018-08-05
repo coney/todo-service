@@ -2,9 +2,7 @@ package com.thoughtworks.training.wukun.todoservice.controller;
 
 import com.google.common.collect.ImmutableList;
 import com.thoughtworks.training.wukun.todoservice.model.ToDo;
-import com.thoughtworks.training.wukun.todoservice.model.User;
 import com.thoughtworks.training.wukun.todoservice.repository.ToDoRepository;
-import com.thoughtworks.training.wukun.todoservice.repository.UserRepository;
 import com.thoughtworks.training.wukun.todoservice.security.Constants;
 import com.thoughtworks.training.wukun.todoservice.security.JwtSignature;
 import com.thoughtworks.training.wukun.todoservice.service.ToDoService;
@@ -19,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -46,8 +45,6 @@ public class ToDoAPITest {
 
     private final int userId = 0;
 
-    private final User userFixture = new User(userId, "wukun", "dummy");
-
     private final int todoId = 1;
 
     private final ToDo todoFixture = new ToDo(todoId, "foo", false, new Date(), Collections.emptyList(), userId, false);
@@ -61,16 +58,17 @@ public class ToDoAPITest {
     @MockBean
     private ToDoRepository toDoRepository;
 
-    @MockBean
-    private UserRepository userRepository;
 
     @Autowired
     private ToDoService toDoService;
 
+    private UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+            new User(String.valueOf(userId), "", Collections.emptySet()), null, Collections.emptyList()
+    );
+
     @Before
     public void setUp() throws Exception {
         when(toDoRepository.findAllByUserId(userId)).thenReturn(ImmutableList.of(todoFixture));
-        when(userRepository.findOne(userId)).thenReturn(userFixture);
     }
 
     @Test
@@ -83,9 +81,7 @@ public class ToDoAPITest {
     public void shouldReturnItemsListWithAuthentication() throws Exception {
         mockMvc.perform(
                 get("/todos")
-                        .with(authentication(new UsernamePasswordAuthenticationToken(
-                        userFixture, null, Collections.emptyList()
-                ))))
+                        .with(authentication(authentication)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].id").value(todoId))
@@ -110,7 +106,7 @@ public class ToDoAPITest {
     @Test
     public void shouldReturnItemsListWithManuallySetSecurityContext() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-                userFixture, null, Collections.emptyList()
+                authentication, null, Collections.emptyList()
         ));
 
 //        mockMvc.perform(get("/todos"))
