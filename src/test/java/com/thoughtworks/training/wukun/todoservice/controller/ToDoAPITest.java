@@ -99,9 +99,7 @@ public class ToDoAPITest {
 
     @Test
     public void shouldReturnItemsListWithManuallySetSecurityContext() throws Exception {
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
-                authentication, null, Collections.emptyList()
-        ));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
 //        mockMvc.perform(get("/todos"))
 //                .andExpect(status().isOk())
