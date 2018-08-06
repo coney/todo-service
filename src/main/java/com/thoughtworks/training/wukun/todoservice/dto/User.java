@@ -1,6 +1,5 @@
 package com.thoughtworks.training.wukun.todoservice.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +21,10 @@ public class User {
 
     private String name;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String password;
+    public static User fromToken(String token) {
+        String[] userInfo = token.split(":");
+        return new User(Integer.valueOf(userInfo[0]), userInfo[1]);
+    }
 }
 
 

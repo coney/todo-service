@@ -18,7 +18,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Autowired
-    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+    private InternalAuthenticationTokenFilter internalAuthenticationTokenFilter;
 
     @Autowired
     private UnauthorizedEntryPoint unauthorizedEntryPoint;
@@ -29,10 +29,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/users", "/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(internalAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(unauthorizedEntryPoint);
     }
 }

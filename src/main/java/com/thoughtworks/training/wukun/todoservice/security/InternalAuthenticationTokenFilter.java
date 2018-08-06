@@ -1,15 +1,13 @@
 package com.thoughtworks.training.wukun.todoservice.security;
 
-import com.thoughtworks.training.wukun.todoservice.client.UserClient;
 import com.thoughtworks.training.wukun.todoservice.dto.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,24 +19,15 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-
-    @Autowired
-    private UserClient userClient;
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return request.getServletPath().startsWith("/login");
-    }
+public class InternalAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             getTokenFromRequest(request).ifPresent(token -> {
-                User user = userClient.verifyToken(token);
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken(
-                                user, null, Collections.emptyList()
+                                User.fromToken(token), null, Collections.emptyList()
                         )
                 );
             });
@@ -51,8 +40,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private Optional<String> getTokenFromRequest(HttpServletRequest request) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.isEmpty(authorization) && authorization.startsWith(Constants.BEARER_TOKEN_PREFIX)) {
-            return Optional.of(authorization.substring(Constants.BEARER_TOKEN_PREFIX.length()));
+        if (!StringUtils.isEmpty(authorization)) {
+            return Optional.ofNullable(authorization);
         }
         return Optional.empty();
     }

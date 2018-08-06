@@ -27,13 +27,9 @@ repositories {
 
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-security')
-	compile('org.springframework.cloud:spring-cloud-starter-feign')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile 'javax.xml.bind:jaxb-api:2.3.0'
-	compile 'io.jsonwebtoken:jjwt:0.9.1'
 	compile('org.flywaydb:flyway-core')
 	compile 'com.google.guava:guava:25.1-jre'
 	compile('org.projectlombok:lombok')
