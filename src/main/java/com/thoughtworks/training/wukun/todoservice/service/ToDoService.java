@@ -18,8 +18,11 @@ public class ToDoService {
     private ToDoRepository todoRepository;
 
     public List<ToDo> list() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return todoRepository.findAllByUserId(user.getId());
+        return todoRepository.findAllByUserId(getCurrentUser().getId());
+    }
+
+    private User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     @Transactional
@@ -29,9 +32,9 @@ public class ToDoService {
                 .orElseThrow(() -> new NotFoundException());
     }
 
-    public void create(ToDo todo) {
-//        todo.getTasks().forEach(task -> task.setToDo(todo));
-        todoRepository.save(todo);
+    public ToDo create(ToDo todo) {
+        todo.setUserId(getCurrentUser().getId());
+        return todoRepository.save(todo);
     }
 
     public void delete(Integer id) {

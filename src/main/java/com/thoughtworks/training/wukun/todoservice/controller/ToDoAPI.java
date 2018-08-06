@@ -28,8 +28,8 @@ public class ToDoAPI {
     }
 
     @PostMapping("/todos")
-    public void create(@RequestBody ToDo todo) {
-        todoService.create(todo);
+    public ToDo create(@RequestBody ToDo todo) {
+        return todoService.create(todo);
     }
 
     @GetMapping("/todos/{id}")

@@ -1,5 +1,6 @@
 package com.thoughtworks.training.wukun.todoservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,6 +33,7 @@ import java.util.List;
 public class ToDo {
     @Id
     @GeneratedValue
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
 
     private String text;
@@ -49,10 +51,6 @@ public class ToDo {
     private Integer userId;
 
     @Builder.Default
-    private Boolean deleted = false;
-
-    @JsonProperty
-    public String getChecked() {
-        return checked.toString();
-    }
+    @JsonIgnore
+    private boolean deleted = false;
 }
