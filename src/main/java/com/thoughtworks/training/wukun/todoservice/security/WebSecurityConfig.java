@@ -34,6 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeRequests()
+                .antMatchers( "/hystrix*/**", "/webjars/**","/*.stream/**").permitAll()
                 .antMatchers(actuatorEndpoints.stream().map(AbstractEndpointMvcAdapter::getPath).toArray(String[]::new)).permitAll()
                 .anyRequest().authenticated()
                 .and()
