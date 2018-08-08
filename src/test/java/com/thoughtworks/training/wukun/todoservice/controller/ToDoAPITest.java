@@ -43,7 +43,7 @@ public class ToDoAPITest {
 
     private final int todoId = 1;
 
-    private final ToDo todoFixture = new ToDo(todoId, "foo", false, new Date(), Collections.emptyList(), userId, false);
+    private final ToDo todoFixture = new ToDo(todoId, "foo", false, new Date(), Collections.emptyList(), userId, "", false);
 
     @Autowired
     private MockMvc mockMvc;
@@ -57,7 +57,7 @@ public class ToDoAPITest {
     private ToDoService toDoService;
 
     private UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            new User(userId, "fakeUser", ""), null, Collections.emptyList()
+            new User(userId, "fakeUser"), null, Collections.emptyList()
     );
 
     @Before

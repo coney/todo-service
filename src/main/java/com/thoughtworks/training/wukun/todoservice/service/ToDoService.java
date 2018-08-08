@@ -17,8 +17,11 @@ public class ToDoService {
     @Autowired
     private ToDoRepository todoRepository;
 
+    @Autowired
+    private SpellCheckerService spellCheckService;
+
     public List<ToDo> list() {
-        return todoRepository.findAllByUserId(getCurrentUser().getId());
+        return spellCheckService.check(todoRepository.findAllByUserId(getCurrentUser().getId()));
     }
 
     private User getCurrentUser() {
