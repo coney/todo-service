@@ -52,7 +52,7 @@ public class ToDo {
     private Integer userId;
 
     @Transient
-    private String suggestion;
+    private String translation;
 
     @Builder.Default
     @JsonIgnore

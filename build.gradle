@@ -34,6 +34,7 @@ dependencies {
 	compile 'org.languagetool:language-en:4.2'
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.flywaydb:flyway-core')
+	compile('org.springframework.cloud:spring-cloud-starter-feign')
 	compile 'com.google.guava:guava:25.1-jre'
 	compile('org.projectlombok:lombok')
 	compile('mysql:mysql-connector-java')

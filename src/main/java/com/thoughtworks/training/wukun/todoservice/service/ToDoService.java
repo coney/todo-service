@@ -11,17 +11,21 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ToDoService {
     @Autowired
     private ToDoRepository todoRepository;
 
+
     @Autowired
-    private SpellCheckerService spellCheckService;
+    private TranslateService translateService;
 
     public List<ToDo> list() {
-        return spellCheckService.check(todoRepository.findAllByUserId(getCurrentUser().getId()));
+        return todoRepository.findAllByUserId(getCurrentUser().getId()).stream()
+                .map(translateService::translate)
+                .collect(Collectors.toList());
     }
 
     private User getCurrentUser() {
@@ -32,6 +36,7 @@ public class ToDoService {
     public ToDo find(Integer id) {
         ToDo one = todoRepository.findOne(id);
         return Optional.ofNullable(one)
+                .map(translateService::translate)
                 .orElseThrow(() -> new NotFoundException());
     }
 
